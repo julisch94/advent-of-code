@@ -1,4 +1,4 @@
-require_relative 'read_input'
+require_relative '../read_input'
 
 lines = read_input('2022/01/test.txt')
 
