@@ -2,11 +2,7 @@ require_relative '../read_input'
 
 lines = read_input('2022/10/input.txt')
 
-puts lines
-puts "--"
-
 register_series = [1]
-
 lines.each do |line|
   current = register_series.last
   if line == "noop"
@@ -22,11 +18,8 @@ lines.each do |line|
 end
 
 signal_strength = 0
-
 [20, 60, 100, 140, 180, 220].each do |cycles|
-  puts "#{register_series.first(cycles)}"
   value = register_series[cycles-1]
-  puts "register during #{cycles}. cycle: #{value}"
   signal_strength += cycles * value
 end
 
