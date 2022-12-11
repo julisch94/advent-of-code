@@ -48,6 +48,8 @@ class Monkey
 
   end
 
+  private
+
   def throw_item_to_monkey(monkeys, item, monkey_number)
     puts "\t\tItem with worry level #{item} is thrown to monkey #{monkey_number}."
     monkeys[monkey_number].push_item(item)
