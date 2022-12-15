@@ -45,7 +45,7 @@ end
 
 def print_to_file(m)
   old_stdout = $stdout
-  File.open('output.txt', 'w') do |fo|
+  File.open(__dir__ + '/output.txt', 'w') do |fo|
     $stdout = fo
     print m
   end
