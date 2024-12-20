@@ -1,0 +1,133 @@
+package main
+
+import (
+	"bufio"
+	"errors"
+	"fmt"
+	"log"
+	"math"
+	"os"
+	"regexp"
+	"strconv"
+)
+
+type Direction string
+
+const (
+	UP   Direction = "UP"
+	DOWN Direction = "DOWN"
+)
+
+func isValidPair(one int, two int, dir Direction) bool {
+	if dir == UP && one > two {
+		return false
+	}
+	if dir == DOWN && one < two {
+		return false
+	}
+	diff := math.Abs(float64(one - two))
+	return diff >= 1 && diff <= 3
+}
+
+func areValid(one int, two int, three int, dir Direction) bool {
+	if isValidPair(one, two, dir) && isValidPair(two, three, dir) {
+		return true
+	}
+	return false
+}
+
+func isSafe(levels []int, lastChance bool) bool {
+	var dir = UP
+	if levels[0] > levels[1] {
+		dir = DOWN
+	}
+
+	for i := 0; i < len(levels)-1; i++ {
+		one := levels[i]
+		two := levels[i+1]
+
+		if isValidPair(one, two, dir) {
+			continue
+		}
+
+		if !lastChance {
+			fmt.Println(levels, "Unsafe regardless of which level is removed.")
+			return false
+		}
+
+		// delete element one and try again
+		deleteLeftWorks := isSafe(append(levels[:i-1], levels[i+1:]...), false)
+
+		if deleteLeftWorks {
+			fmt.Println(levels, "Safe by removing the level,", one)
+			return true
+		}
+
+		if i == len(levels)-2 {
+			fmt.Println(levels, "Safe by removing the level,", two)
+			return true
+		}
+
+		// delete element two and try again
+		deletedRightWorks := isSafe(append(levels[:i], levels[i+2:]...), false)
+		if deletedRightWorks {
+			fmt.Println(levels, "safe after deleting", two)
+			return true
+		}
+
+		fmt.Println(levels, "Unsafe regardless of which level is removed.")
+	}
+
+	if lastChance {
+		fmt.Println(levels, "Safe without removing any level.")
+		return true
+	}
+	return true
+}
+
+func handleLine(line string) bool {
+	pattern := `\d+`
+	re := regexp.MustCompile(pattern)
+
+	matches := re.FindAllString(line, -1)
+
+	levels := make([]int, len(matches))
+	for i, str := range matches {
+		num, err := strconv.Atoi(str)
+		if err != nil {
+			panic(errors.New(fmt.Sprintf("Error converting %s to int: %v\n", str, err)))
+		}
+		levels[i] = num
+	}
+
+	return isSafe(levels, true)
+
+}
+
+func main() {
+	file, err := os.Open("/Users/sjulia3/dev/github/julisch94/advent-of-code/2024/02/input.txt")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer file.Close()
+
+	var numOfSafe = 0
+
+	scanner := bufio.NewScanner(file)
+	// optionally, resize scanner's capacity for lines over 64K, see next example
+	for scanner.Scan() {
+		line := scanner.Text()
+		safe := handleLine(line)
+
+		if safe {
+			numOfSafe++
+		}
+	}
+
+	if err := scanner.Err(); err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Println("Number of safe lines:", numOfSafe)
+
+}
