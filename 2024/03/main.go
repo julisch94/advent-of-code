@@ -7,6 +7,7 @@ import (
 	"os"
 	"regexp"
 	"strconv"
+	"strings"
 )
 
 func compute(expression string) int {
@@ -45,7 +46,7 @@ func handleLine(line string) int64 {
 }
 
 func main() {
-	file, err := os.Open("input1.txt")
+	file, err := os.Open("input2.txt")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -53,13 +54,26 @@ func main() {
 
 	scanner := bufio.NewScanner(file)
 
-	sum := int64(0)
+	completeText := ""
+
 	for scanner.Scan() {
 		line := scanner.Text()
 
-		sum += handleLine(line)
+		completeText += line
 	}
-	fmt.Println("Sum:", sum)
+
+	donots := strings.Split(completeText, "don't()")
+
+	importantText := donots[0]
+
+	for _, donot := range donots[1:] {
+		if strings.Contains(donot, "do()") {
+			importantText += strings.Join(strings.Split(donot, "do()")[1:], "")
+		}
+	}
+
+	sum := handleLine(importantText)
+	fmt.Println("sum:", sum)
 
 	if err := scanner.Err(); err != nil {
 		log.Fatal(err)
