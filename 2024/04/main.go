@@ -31,47 +31,35 @@ func getRune(x, y int) string {
 func searchXmasFromCoordinate(x, y int) int {
 	matches := 0
 
-	if getRune(x, y) != "X" {
+	if getRune(x, y) != "A" {
 		return 0
 	}
 
-	// upwards
-	if getRune(x, y-1) == "M" && getRune(x, y-2) == "A" && getRune(x, y-3) == "S" {
+	// M.S
+	// .A.
+	// M.S
+	if getRune(x-1, y-1) == "M" && getRune(x+1, y+1) == "S" && getRune(x-1, y+1) == "M" && getRune(x+1, y-1) == "S" {
 		matches++
 	}
 
-	// downwards
-	if getRune(x, y+1) == "M" && getRune(x, y+2) == "A" && getRune(x, y+3) == "S" {
+	// S.M
+	// .A.
+	// S.M
+	if getRune(x-1, y-1) == "S" && getRune(x+1, y+1) == "M" && getRune(x-1, y+1) == "S" && getRune(x+1, y-1) == "M" {
 		matches++
 	}
 
-	// left
-	if getRune(x-1, y) == "M" && getRune(x-2, y) == "A" && getRune(x-3, y) == "S" {
+	// M.M
+	// .A.
+	// S.S
+	if getRune(x-1, y-1) == "M" && getRune(x+1, y+1) == "S" && getRune(x-1, y+1) == "S" && getRune(x+1, y-1) == "M" {
 		matches++
 	}
 
-	// right
-	if getRune(x+1, y) == "M" && getRune(x+2, y) == "A" && getRune(x+3, y) == "S" {
-		matches++
-	}
-
-	// diagonal up left
-	if getRune(x-1, y-1) == "M" && getRune(x-2, y-2) == "A" && getRune(x-3, y-3) == "S" {
-		matches++
-	}
-
-	// diagonal up right
-	if getRune(x+1, y-1) == "M" && getRune(x+2, y-2) == "A" && getRune(x+3, y-3) == "S" {
-		matches++
-	}
-
-	// diagonal down left
-	if getRune(x-1, y+1) == "M" && getRune(x-2, y+2) == "A" && getRune(x-3, y+3) == "S" {
-		matches++
-	}
-
-	// diagonal down right
-	if getRune(x+1, y+1) == "M" && getRune(x+2, y+2) == "A" && getRune(x+3, y+3) == "S" {
+	// S.S
+	// .A.
+	// M.M
+	if getRune(x-1, y-1) == "S" && getRune(x+1, y+1) == "M" && getRune(x-1, y+1) == "M" && getRune(x+1, y-1) == "S" {
 		matches++
 	}
 
