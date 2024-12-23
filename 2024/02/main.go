@@ -29,41 +29,41 @@ func matchesConditions(one int, two int, dir Direction) bool {
 	return diff >= 1 && diff <= 3
 }
 
-func matchesAllConditions(levels []int) bool {
-	if len(levels) == 0 || len(levels) == 1 {
-		return true
-	}
-
-	var dir = UP
+func isArraySafeStrict(levels []int) bool {
+	direction := UP
 	if levels[0] > levels[1] {
-		dir = DOWN
-	} else {
-		dir = UP
+		direction = DOWN
 	}
-
-	allGood := true
 
 	for i := 0; i < len(levels)-1; i++ {
 		one := levels[i]
 		two := levels[i+1]
-		if !matchesConditions(one, two, dir) {
-			allGood = false
+
+		if !matchesConditions(one, two, direction) {
+			return false
 		}
 	}
+	return true
+}
 
-	if allGood {
+func isSafeRecursive(levels []int, changesLeft int) bool {
+	if isArraySafeStrict(levels) {
 		fmt.Println(levels, "Safe without removing any level.")
 		return true
 	}
 
-	// for every index, remove it from the array and check if it matches all conditions now
-	for i := 0; i < len(levels); i++ {
-		newArray := make([]int, len(levels)-1)
-		copy(newArray[:i], levels[:i])
-		copy(newArray[i:], levels[i+1:])
+	if changesLeft == 0 {
+		fmt.Println(levels, "Unsafe regardless of which level is removed.")
+		return false
+	}
 
-		if matchesAllConditions(newArray) {
-			fmt.Printf("%v: Safe by removing the %d. level, %d\n", levels, i, levels[i])
+	// try deleting each element and see if any of the resulting arrays are safe
+	for i := 0; i < len(levels); i++ {
+		newLevels := make([]int, len(levels)-1)
+		copy(newLevels[:i], levels[:i])
+		copy(newLevels[i:], levels[i+1:])
+		if isSafeRecursive(newLevels, changesLeft-1) {
+			fmt.Println(levels, "Safe after removing level", levels[i])
 			return true
 		}
 	}
@@ -72,15 +72,7 @@ func matchesAllConditions(levels []int) bool {
 }
 
 func isSafe(levels []int) bool {
-	fmt.Println("levels:", levels)
-
-	// compare 0 and 1
-
-	// if
-
-	matches := matchesAllConditions(levels)
-
-	return matches
+	return isSafeRecursive(levels, 1)
 }
 
 func handleLine(line string) bool {
@@ -102,7 +94,7 @@ func handleLine(line string) bool {
 }
 
 func main() {
-	file, err := os.Open("/Users/sjulia3/dev/github/julisch94/advent-of-code/2024/02/input.txt")
+	file, err := os.Open("input2.txt")
 	if err != nil {
 		log.Fatal(err)
 	}
